@@ -12,10 +12,10 @@ var session = require('express-session');
 var db = require('knex')({
     client: 'mysql',
     connection: {
-        host     : '127.0.0.1',
-        user     : 'xxx',
+        host     : '203.157.185.18',
+        user     : 'thait-rex',
         password : '123456',
-        database : 'mdb',
+        database : 'hdc',
         port: 3306
     },
     pool: {
@@ -72,8 +72,7 @@ var auth = function (req, res, next) {
     if (req.session.username) {
         next();
     } else {
-        req.session.error = 'Access denied!';
-        res.redirect('/login');
+        res.redirect('/auth_failed');
     }
 };
 
