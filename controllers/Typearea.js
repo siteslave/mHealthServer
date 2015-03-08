@@ -38,3 +38,22 @@ exports.detail = function (req, res) {
     }
 
 };
+
+exports.confirm = function (req, res) {
+    var db = req.db;
+    var key = req.body.key;
+    var cid = req.body.cid;
+
+    if (key == req.session.key) {
+        Typearea.confirm(db, cid, req.session.hospcode)
+            .then(function () {
+                res.send({ok: true});
+            }, function (err) {
+                console.log(err);
+                res.send({ok:false, msg: err});
+            });
+    } else {
+        res.send({ ok: false, msg: 'Invalid key, please login again.' });
+    }
+
+};
