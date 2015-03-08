@@ -25,8 +25,10 @@ exports.detail = function (req, res) {
     var key = req.body.key;
     var cid = req.body.cid;
 
+    var hospcode = req.session.hospcode;
+
     if (key == req.session.key) {
-        Typearea.detail(db, cid)
+        Typearea.detail(db, cid, hospcode)
             .then(function (rows) {
                 res.send({ok: true, rows: rows});
             }, function (err) {
