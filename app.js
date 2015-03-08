@@ -12,10 +12,10 @@ var session = require('express-session');
 var db = require('knex')({
     client: 'mysql',
     connection: {
-        host     : '203.157.185.18',
-        user     : 'thait-rex',
-        password : '123456',
-        database : 'hdc',
+        host     : '127.0.0.1',
+        user     : 'xxx',
+        password : 'xxx',
+        database : 'xxx',
         port: 3306
     },
     pool: {
