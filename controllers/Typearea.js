@@ -20,7 +20,7 @@ exports.list = function (req, res) {
     }
 };
 
-exports.detail = function () {
+exports.detail = function (req, res) {
     var db = req.db;
     var key = req.body.key;
     var cid = req.body.cid;
@@ -30,6 +30,7 @@ exports.detail = function () {
             .then(function (rows) {
                 res.send({ok: true, rows: rows});
             }, function (err) {
+                console.log(err);
                 res.send({ok:false, msg: err});
             });
     } else {

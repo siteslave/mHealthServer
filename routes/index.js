@@ -10,8 +10,4 @@ router.get('/', function(req, res, next) {
 router.post('/typearea/list', Typearea.list);
 router.post('/typearea/detail', Typearea.detail);
 
-router.get('/login', function (req, res) {
-    res.render('login');
-});
-
 module.exports = router;

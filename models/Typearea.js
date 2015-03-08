@@ -4,14 +4,14 @@ exports.list = function (db, hospcode) {
 
     var q = Q.defer();
 
-    db('person')
-        .select('HOSPCODE', 'NAME', 'LNAME', 'TYPEAREA', 'SEX', 'BIRTH', 'CID', db.raw('COUNT(*) AS total'))
-        .whereIn('TYPEAREA', ['1', '3'])
-        .groupBy('CID')
+    db('person as p')
+        .select('p.HOSPCODE', 'p.NAME', 'p.LNAME', 'p.TYPEAREA', 'p.SEX', 'p.BIRTH', 'p.CID', db.raw('COUNT(*) AS total'))
+        //.leftJoin('confirm_typearea as c', 'c.cid', 'p.CID')
+        .whereIn('p.TYPEAREA', ['1', '3'])
+        .groupBy('p.CID')
         .havingRaw('total > ?', [1])
-        .having('HOSPCODE', '=', hospcode)
-        .orderBy('NAME', 'DESC')
-        .limit(20)
+        .having('p.HOSPCODE', '=', hospcode)
+        .orderBy('p.NAME', 'DESC')
         .exec(function (err, rows) {
             if (err) q.reject(err);
             else q.resolve(rows);

@@ -13,9 +13,14 @@ exports.login = function (req, res) {
                 var fullname = rows[0].firstname;
 
                 req.session.key = key;
-                req.session.hospcode = $rows[0].lastname;
+                req.session.hospcode = rows[0].lastname;
 
-                res.send({ok: true, key: key, fullname: fullname, hospcode: rows[0].lastname});
+                res.send({
+                    ok: true,
+                    key: key,
+                    fullname: fullname,
+                    hospcode: rows[0].lastname
+                });
 
             } else {
                 res.send({ok: false, msg: 'Login failed'})
