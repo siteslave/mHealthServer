@@ -4,7 +4,7 @@ var Typearea = require('../controllers/Typearea');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+    res.send({ok: true, msg: 'Welcome to Maha Sarakham Health Support System.'});
 });
 
 router.post('/typearea/list', Typearea.list);
