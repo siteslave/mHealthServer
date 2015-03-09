@@ -55,3 +55,20 @@ exports.confirm = function (db, cid, hospcode) {
 
     return q.promise;
 };
+
+exports.changeTypearea = function (db, cid, typearea, hospcode) {
+    var q = Q.defer();
+
+    db('person')
+        .where('CID', cid)
+        .where('HOSPCODE', hospcode)
+        .update({
+            TYPEAREA: typearea
+        })
+        .exec(function (err) {
+            if (err) q.reject(err);
+            else q.resolve();
+        });
+
+    return q.promise;
+};

@@ -59,3 +59,25 @@ exports.confirm = function (req, res) {
     }
 
 };
+
+exports.changeTypearea = function (req, res) {
+
+    var db = req.db;
+    var key = req.body.key;
+    var cid = req.body.cid;
+    var hospcode = req.body.hospcode;
+    var typearea = req.body.typearea;
+
+    if (key == req.session.key) {
+        Typearea.changeTypearea(db, cid, typearea, hospcode)
+            .then(function () {
+                res.send({ok: true});
+            }, function (err) {
+                console.log(err);
+                res.send({ok:false, msg: err});
+            });
+    } else {
+        res.send({ ok: false, msg: 'Invalid key, please login again.' });
+    }
+
+};
