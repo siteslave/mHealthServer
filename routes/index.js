@@ -9,9 +9,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/typearea/list', Typearea.list);
 router.post('/typearea/detail', Typearea.detail);
-
-router.get('/login', function (req, res) {
-    res.render('login');
-});
+router.post('/typearea/confirm', Typearea.confirm);
+router.post('/typearea/change', Typearea.changeTypearea);
 
 module.exports = router;

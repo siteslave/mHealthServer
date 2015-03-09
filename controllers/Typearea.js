@@ -20,16 +20,60 @@ exports.list = function (req, res) {
     }
 };
 
-exports.detail = function () {
+exports.detail = function (req, res) {
+    var db = req.db;
+    var key = req.body.key;
+    var cid = req.body.cid;
+
+    var hospcode = req.session.hospcode;
+
+    if (key == req.session.key) {
+        Typearea.detail(db, cid, hospcode)
+            .then(function (rows) {
+                res.send({ok: true, rows: rows});
+            }, function (err) {
+                console.log(err);
+                res.send({ok:false, msg: err});
+            });
+    } else {
+        res.send({ ok: false, msg: 'Invalid key, please login again.' });
+    }
+
+};
+
+exports.confirm = function (req, res) {
     var db = req.db;
     var key = req.body.key;
     var cid = req.body.cid;
 
     if (key == req.session.key) {
-        Typearea.detail(db, cid)
-            .then(function (rows) {
-                res.send({ok: true, rows: rows});
+        Typearea.confirm(db, cid, req.session.hospcode)
+            .then(function () {
+                res.send({ok: true});
             }, function (err) {
+                console.log(err);
+                res.send({ok:false, msg: err});
+            });
+    } else {
+        res.send({ ok: false, msg: 'Invalid key, please login again.' });
+    }
+
+};
+
+exports.changeTypearea = function (req, res) {
+
+    var db = req.db;
+    var key = req.body.key;
+    var cid = req.body.cid;
+    var hospcode = req.body.hospcode;
+    var typearea = req.body.typearea;
+
+    if (key == req.session.key) {
+        Typearea.changeTypearea(db, cid, typearea, hospcode)
+            .then(function () {
+                res.send({ok: true});
+            }, function (err) {
+                console.log(err);
                 res.send({ok:false, msg: err});
             });
     } else {

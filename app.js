@@ -13,9 +13,9 @@ var db = require('knex')({
     client: 'mysql',
     connection: {
         host     : '127.0.0.1',
-        user     : 'xxx',
-        password : 'xxx',
-        database : 'xxx',
+        user     : 'hdc',
+        password : 'hdc',
+        database : 'hdc',
         port: 3306
     },
     pool: {
@@ -49,7 +49,8 @@ app.use(session({
     secret: 'MySeCrETkEy',
     resave: false,
     saveUninitialized: true,
-    secure: true
+    secure: true,
+    cookie: { maxAge: 60000 }
 }));
 
 /**

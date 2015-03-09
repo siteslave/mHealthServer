@@ -1,17 +1,36 @@
 var Q = require('Q');
+var moment = require('moment');
 
 exports.list = function (db, hospcode) {
 
     var q = Q.defer();
+    var sql = [
+        'SELECT a.HOSPCODE, a.NAME, a.LNAME, a.TYPEAREA, a.SEX, a.BIRTH, a.CID, c.confirm_hospcode',
+        'FROM (SELECT a.NAME, a.LNAME, a.TYPEAREA, a.SEX, a.BIRTH, a.CID, a.HOSPCODE',
+        'FROM person a',
+        'WHERE a.TYPEAREA in(?, ?)',
+        'GROUP BY a.CID',
+        'HAVING count(*) >1 AND a.HOSPCODE=?) as a',
+        'LEFT JOIN confirm_typearea as c on c.cid=a.CID',
+        'group by a.CID'
+    ].join(' ');
 
-    db('person')
-        .select('HOSPCODE', 'NAME', 'LNAME', 'TYPEAREA', 'SEX', 'BIRTH', 'CID', db.raw('COUNT(*) AS total'))
-        .whereIn('TYPEAREA', ['1', '3'])
-        .groupBy('CID')
-        .havingRaw('total > ?', [1])
-        .having('HOSPCODE', '=', hospcode)
-        .orderBy('NAME', 'DESC')
-        .limit(20)
+    db.raw(sql, ['1', '3', hospcode])
+        .then(function (rows){
+            q.resolve(rows[0]);
+        });
+    return q.promise;
+};
+
+exports.detail = function (db, cid, hospcode) {
+    var q = Q.defer();
+    db('person as p')
+        .select('p.HOSPCODE', 'c.hospname' ,'p.CID', 'p.NAME', 'p.LNAME', 'p.SEX', 'p.BIRTH' ,'p.TYPEAREA' ,'p.D_UPDATE', 't.confirm_hospcode')
+        .leftJoin('chospcode as c', 'p.HOSPCODE', 'c.hospcode')
+        .leftJoin('confirm_typearea as t', 't.cid', 'p.CID')
+        .where('p.CID', cid)
+        .whereIn('p.TYPEAREA', ['1', '3'])
+        .where('p.HOSPCODE', '!=', hospcode)
         .exec(function (err, rows) {
             if (err) q.reject(err);
             else q.resolve(rows);
@@ -20,23 +39,35 @@ exports.list = function (db, hospcode) {
     return q.promise;
 };
 
-exports.detail = function (db, cid) {
+exports.confirm = function (db, cid, hospcode) {
     var q = Q.defer();
 
-    /*
-     SELECT HOSPCODE,chospital.hosname,CID,`NAME`,LNAME,SEX,BIRTH,TYPEAREA,D_UPDATE FROM person
-     LEFT JOIN chospital ON person.HOSPCODE=chospital.hoscode
-     WHERE CID='1449900384355'
-     AND TYPEAREA in('1','3')
-     */
-    db('person as p')
-        .select('p.HOSPCODE', 'c.hosname' ,'p.CID', 'p.NAME', 'p.LNAME', 'p.SEX', 'p.BIRTH' ,'p.TYPEAREA' ,'p.D_UPDATE')
-        .leftJoin('chospital as c', 'p.HOSPCODE', 'c.hoscode')
-        .where('p.CID', cid)
-        .whereIn('p.TYPEAREA', ['1', '3'])
-        .exec(function (err, rows) {
+    db('confirm_typearea')
+        .insert({
+            cid: cid,
+            confirm_hospcode: hospcode,
+            confirm_date: moment().format('YYYY-MM-DD HH:mm:ss')
+        })
+        .exec(function (err) {
             if (err) q.reject(err);
-            else q.resolve(rows);
+            else q.resolve();
+        });
+
+    return q.promise;
+};
+
+exports.changeTypearea = function (db, cid, typearea, hospcode) {
+    var q = Q.defer();
+
+    db('person')
+        .where('CID', cid)
+        .where('HOSPCODE', hospcode)
+        .update({
+            TYPEAREA: typearea
+        })
+        .exec(function (err) {
+            if (err) q.reject(err);
+            else q.resolve();
         });
 
     return q.promise;
