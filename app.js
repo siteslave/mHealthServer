@@ -49,8 +49,7 @@ app.use(session({
     secret: 'MySeCrETkEy',
     resave: false,
     saveUninitialized: true,
-    secure: true,
-    cookie: { maxAge: 60000 }
+    secure: true
 }));
 
 /**
