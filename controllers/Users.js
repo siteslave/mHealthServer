@@ -1,5 +1,6 @@
 var Users = require('../models/Users');
 var _ = require('lodash');
+var rnd = require('random-key');
 
 exports.login = function (req, res) {
     var username = req.body.username;
@@ -9,7 +10,7 @@ exports.login = function (req, res) {
         .then(function (rows) {
             if(_.size(rows)) {
                 // Generate
-                var key = _.random(10000000000, 9999999999);
+                var key = rnd.generateBase30(15);
                 var fullname = rows[0].firstname;
 
                 req.session.key = key;
