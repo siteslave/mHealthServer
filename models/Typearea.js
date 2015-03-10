@@ -72,3 +72,36 @@ exports.changeTypearea = function (db, cid, typearea, hospcode) {
 
     return q.promise;
 };
+
+exports.checkDuplicatedConfirm = function (cid) {
+    var q = Q.defer();
+
+    db('confirm_typearea')
+        .where('cid', cid)
+        .exec(function (err, rows) {
+            if (err) q.reject(err);
+            else q.resolve(rows);
+        });
+    
+    return q.promise;
+};
+
+exports.addLog = function (db, typearea, cid, hospcode, username) {
+    var q = Q.defer();
+
+    db('mHealth_typearea_log')
+        .insert({
+            username: username,
+            cid: cid,
+            hospcode: hospcode,
+            old_typearea: old_typearea,
+            new_typearea: new_typearea,
+            created_at: moment('YYYY-MM-DD HH:mm:ss')
+        })
+        .exec(function (err) {
+            if (err) q.reject(err);
+            else q.resolve();
+        });
+
+    return q.promise;
+};

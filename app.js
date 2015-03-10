@@ -13,8 +13,8 @@ var db = require('knex')({
     client: 'mysql',
     connection: {
         host     : '127.0.0.1',
-        user     : 'hdc',
-        password : 'hdc',
+        user     : 'u',
+        password : 'p',
         database : 'hdc',
         port: 3306
     },
