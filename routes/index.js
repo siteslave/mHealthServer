@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Typearea = require('../controllers/Typearea');
 var Chronic = require('../controllers/Chronic');
+var Version = require('../controllers/Version');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -16,6 +17,9 @@ router.post('/typearea/change', Typearea.changeTypearea);
 
 // Chronic
 router.post('/chronic/duplicated/list', Chronic.getDuplicated);
+
+// Version
+router.post('/version', Version.getVersion);
 
 // Export module
 module.exports = router;

@@ -14,6 +14,7 @@ exports.getDuplicated = function (db, hospcode) {
         .select('m.CID', 'm.PTNAME', 'm.BIRTH', 'm.SEX', 'm.DIAGCODE', 'm.DATE_SERV', 'm.HOSPCODE', 'c.hospname as HOSPNAME')
         .leftJoin('chospcode as c', 'c.hospcode', 'm.HOSPCODE')
         .where('m.HOSPCODE_PT', hospcode)
+        .groupByRaw('m.CID, m.GROUPCODE')
         .exec(function (err, rows) {
             if (err) q.reject(err);
             else q.resolve(rows);
