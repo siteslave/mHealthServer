@@ -1,21 +1,22 @@
 var Q = require('q');
 var moment = require('moment');
 
-exports.list = function (db, hospcode) {
-
+exports.list = function (db, ohospcode, offset) {
+    var hospcode='%'+ohospcode+'%';
     var q = Q.defer();
     var sql = [
-        'SELECT a.HOSPCODE, a.NAME, a.LNAME, a.TYPEAREA, a.SEX, a.BIRTH, a.CID, c.confirm_hospcode',
-        'FROM (SELECT a.NAME, a.LNAME, a.TYPEAREA, a.SEX, a.BIRTH, a.CID, a.HOSPCODE',
+        'SELECT ? as HOSPCODE, a.NAME, a.LNAME, a.TYPEAREA, a.SEX, a.BIRTH, a.CID, c.confirm_hospcode',
+        'FROM (SELECT a.NAME, a.LNAME, a.TYPEAREA, a.SEX, a.BIRTH, a.CID, a.HOSPCODE, GROUP_CONCAT(a.HOSPCODE) as HOS_CONCAT ',
         'FROM person a',
         'WHERE a.TYPEAREA in(?, ?)',
         'GROUP BY a.CID',
-        'HAVING count(*) >1 AND a.HOSPCODE=?) as a',
+        'HAVING count(*) >1 AND HOS_CONCAT LIKE ? ) as a',
         'LEFT JOIN confirm_typearea as c on c.cid=a.CID',
-        'group by a.CID'
+        'group by a.CID',
+        'LIMIT 25 OFFSET ?'
     ].join(' ');
-
-    db.raw(sql, ['1', '3', hospcode])
+    console.log(sql);
+    db.raw(sql, [ohospcode, '1', '3',hospcode, offset])
         .then(function (rows){
             q.resolve(rows[0]);
         });
@@ -30,7 +31,7 @@ exports.detail = function (db, cid, hospcode) {
         .leftJoin('confirm_typearea as t', 't.cid', 'p.CID')
         .where('p.CID', cid)
         .whereIn('p.TYPEAREA', ['1', '3'])
-        .where('p.HOSPCODE', '!=', hospcode)
+        //.where('p.HOSPCODE', '!=', hospcode)
         .exec(function (err, rows) {
             if (err) q.reject(err);
             else q.resolve(rows);

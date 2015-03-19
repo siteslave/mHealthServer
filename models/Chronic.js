@@ -1,20 +1,15 @@
 /** Chronic model **/
 var Q = require('q');
 
-exports.getDuplicated = function (db, hospcode) {
+exports.getDuplicated = function (db, hospcode, id , offset) {
     var q = Q.defer();
-
-    /*
-     select m.CID, m.PTNAME, m.BIRTH, m.SEX, m.DIAGCODE, m.DATE_SERV, m.HOSPCODE, c.hospname
-     from mHealth_loss_chronic as m
-     LEFT JOIN chospcode as c on c.hospcode=m.HOSPCODE
-     where m.HOSPCODE_PT="04916"
-     */
     db('mHealth_loss_chronic as m')
-        .select('m.CID', 'm.PTNAME', 'm.BIRTH', 'm.SEX', 'm.DIAGCODE', 'm.DATE_SERV', 'm.HOSPCODE', 'c.hospname as HOSPNAME')
+        .select('m.CID', 'm.PTNAME', 'm.BIRTH', 'm.SEX', 'm.DIAGCODE', 'm.DATE_SERV', 'm.HOSPCODE', 'c.hospname as HOSPNAME', 'm.GROUPCODE')
         .leftJoin('chospcode as c', 'c.hospcode', 'm.HOSPCODE')
         .where('m.HOSPCODE_PT', hospcode)
+        //.where('m.GROUPCODE',id)
         .groupByRaw('m.CID, m.GROUPCODE')
+        .limit(25).offset(offset)
         .exec(function (err, rows) {
             if (err) q.reject(err);
             else q.resolve(rows);

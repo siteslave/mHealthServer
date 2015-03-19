@@ -5,9 +5,10 @@ exports.getDuplicated = function (req, res) {
     var db = req.db;
     var key = req.body.key;
     var hospcode = req.body.hospcode;
-
+    var id = req.body.id;
+    var offset = req.body.offset;
     if (key == req.session.key) {
-        Chronic.getDuplicated(db, hospcode)
+        Chronic.getDuplicated(db, hospcode, id, offset)
             .then(function (rows) {
                 res.send({ok: true, rows: rows});
             }, function (err) {

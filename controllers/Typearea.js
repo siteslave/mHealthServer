@@ -5,13 +5,14 @@ exports.list = function (req, res) {
     var db = req.db;
     var hospcode = req.session.hospcode;
     var key = req.body.key;
-
+    var offset = req.body.offset;
+    console.log(offset);
     if (key == req.session.key) {
-        Typearea.list(db, hospcode)
+        Typearea.list(db, hospcode, offset)
             .then(function (rows) {
                 var total = _.size(rows);
-                var people = _.sample(rows, 50);
-                res.send({ok: true, rows: people, total: total});
+                //var people = _.sample(rows, 50);
+                res.send({ok: true, rows: rows, total: total});
             }, function (err) {
                 res.send({ok: false, msg: err});
             });
